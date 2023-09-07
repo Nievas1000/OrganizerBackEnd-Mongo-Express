@@ -16,8 +16,7 @@ const taskSchema = new mongoose.Schema({
   projectId: {
     type: String,
   },
-
-  subtasks: [taskSchema],
+  subtasks: [],
 });
 
 const Task = mongoose.model("Task", taskSchema);
