@@ -39,3 +39,31 @@ exports.getTasksByProject = async (req, res) => {
     res.status(500).json({ error: "Unable to fetch tasks" });
   }
 };
+
+exports.updateTask = async (req, res) => {
+  const taskId = req.params.id;
+  const { name, description, state, owner } = req.body;
+
+  if (name && description && state) {
+    try {
+      const existingTask = await Task.findById(taskId);
+
+      if (existingTask) {
+        existingTask.name = name;
+        existingTask.description = description;
+        existingTask.state = state;
+        existingTask.owner = owner;
+
+        await existingTask.save();
+
+        res.status(200).json({ message: "Task updated!" });
+      } else {
+        res.status(404).json({ error: "Task not found." });
+      }
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  } else {
+    res.status(400).json({ message: "Missing fields" });
+  }
+};
