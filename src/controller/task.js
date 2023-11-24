@@ -67,3 +67,35 @@ exports.updateTask = async (req, res) => {
     res.status(400).json({ message: "Missing fields" });
   }
 };
+
+exports.updateTasksOrders = async (req, res) => {
+  const { reorderedTasks } = req.body;
+
+  try {
+    const bulkOps = reorderedTasks.map((task, index) => ({
+      updateOne: {
+        filter: { _id: task._id },
+        update: { $set: { order: index + 1 } },
+      },
+    }));
+
+    await Task.bulkWrite(bulkOps);
+
+    res.status(200).json({ message: "Order updated successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+exports.getTaskByStatus = async (req, res) => {
+  const { status, projectId } = req.params;
+
+  try {
+    const tasks = await Task.find({ state: status, projectId });
+
+    res.status(200).json({ tasks });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
