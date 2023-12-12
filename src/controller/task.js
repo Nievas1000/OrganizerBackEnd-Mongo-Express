@@ -40,6 +40,22 @@ exports.getTasksByProject = async (req, res) => {
   }
 };
 
+exports.getTaskById = async (req, res) => {
+  const taskId = req.params.id;
+
+  try {
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    res.status(200).json(task);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to fetch task" });
+  }
+};
 exports.updateTask = async (req, res) => {
   const taskId = req.params.id;
   const { name, description, state, owner } = req.body;
