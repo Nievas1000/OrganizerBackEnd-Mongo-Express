@@ -26,7 +26,11 @@ exports.createUser = async (req, res) => {
         });
 
         await newUser.save();
-        res.status(200).json({ message: "User created!", token });
+        res.status(200).json({
+          message: "User created!",
+          token,
+          user: { name: existingUser.name, email: existingUser.email },
+        });
       } else {
         res
           .status(409)
@@ -55,7 +59,11 @@ exports.checkUser = async (req, res) => {
         );
 
         if (passwordMatch) {
-          res.status(200).json({ user: existingUser, token });
+          res.status(200).json({
+            user: existingUser,
+            token,
+            user: { name: existingUser.name, email: existingUser.email },
+          });
         } else {
           res.status(401).json({ error: "Invalid email or password" });
         }
@@ -69,18 +77,32 @@ exports.checkUser = async (req, res) => {
 };
 
 exports.getUserByEmail = async (req, res) => {
-  const { email } = req.body;
+  const { email, isExternal } = req.body;
 
   if (email) {
     try {
       const userExist = await User.findOne({ email });
 
       if (userExist) {
-        res.status(200).json({
-          message: "User exist!",
-          exist: true,
-          password: userExist.password ? true : false,
-        });
+        if (isExternal) {
+          const token = jwt.sign(
+            { userId: userExist._id, email: userExist.email },
+            "kira",
+            { expiresIn: expireTime }
+          );
+          res.status(200).json({
+            message: "User exist!",
+            exist: true,
+            token: token,
+            user: { name: userExist.name, email: userExist.email },
+          });
+        } else {
+          res.status(200).json({
+            message: "User exist!",
+            exist: true,
+            password: userExist.password ? true : false,
+          });
+        }
       } else {
         res.status(200).json({
           error: "There is not a user with that email.",
@@ -88,7 +110,7 @@ exports.getUserByEmail = async (req, res) => {
         });
       }
     } catch (error) {
-      res.status(500).json({ error });
+      res.status(500).json(error);
     }
   } else {
     res.status(400).json({ error: "Missing required fields" });
@@ -117,6 +139,7 @@ exports.addPasswordToUser = async (req, res) => {
           error: "The password was updated.",
           exist: false,
           token,
+          user: { name: userExist.name, email: userExist.email },
         });
       } else {
         res.status(409).json({
