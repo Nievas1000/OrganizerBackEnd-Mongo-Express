@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 const Project = require("../model/project");
+const User = require("../model/user");
 
 exports.createProject = async (req, res) => {
-  const { name, description, startDate, endDate, state } = req.body;
-  if (name && description && state && startDate) {
+  const { name, description, startDate, endDate, state, userId } = req.body;
+  if (name && description && state && startDate && userId) {
     try {
       const projectExist = await Project.findOne({ name });
       if (!projectExist) {
@@ -15,6 +16,10 @@ exports.createProject = async (req, res) => {
           state,
         });
         await newProject.save();
+
+        const user = await User.findById(userId);
+        user.projects.push(newProject._id);
+        await user.save();
         res.status(200).json({ message: "Project created!" });
         mongoose.connection.close();
       } else {
@@ -24,6 +29,7 @@ exports.createProject = async (req, res) => {
         mongoose.connection.close();
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error });
     }
   } else {
@@ -37,5 +43,32 @@ exports.getAllProjects = async (req, res) => {
     res.status(200).json(projects);
   } catch (error) {
     res.status(500).json({ error: "Unable to fetch projects" });
+  }
+};
+
+exports.getProjectsByUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id).populate("projects");
+
+    if (user) {
+      const projects = user.projects;
+      res.status(200).json(projects);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    res.status(500).json({ error: "Unable to fetch projects" });
+  }
+};
+
+exports.getUsersByProject = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const usersInProject = await User.find({ projects: id });
+    res.status(200).json(usersInProject);
+  } catch (error) {
+    res.status(500).json({ error: "Unable to fetch users in project" });
   }
 };

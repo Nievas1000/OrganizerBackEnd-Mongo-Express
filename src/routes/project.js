@@ -4,5 +4,7 @@ const projectController = require("../controller/project");
 
 router.route("/project").post(projectController.createProject);
 router.route("/project").get(projectController.getAllProjects);
+router.route("/projects/:id").get(projectController.getProjectsByUser);
+router.route("/usersByProject/:id").get(projectController.getUsersByProject);
 
 module.exports = router;
