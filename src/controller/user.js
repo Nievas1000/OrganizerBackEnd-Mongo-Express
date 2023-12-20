@@ -189,3 +189,27 @@ exports.checkLogin = async (req, res) => {
     });
   });
 };
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Unable to fetch users" });
+  }
+};
+
+exports.addProjectsToUser = async (req, res) => {
+  const { projectId, email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    console.log(user);
+    if (user) {
+      user.projects.push(projectId);
+      await user.save();
+      res.status(200).json({ message: "Project added!" });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};

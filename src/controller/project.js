@@ -72,3 +72,17 @@ exports.getUsersByProject = async (req, res) => {
     res.status(500).json({ error: "Unable to fetch users in project" });
   }
 };
+
+exports.getUsersNotInProject = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const projectId = new mongoose.Types.ObjectId(id);
+    const usersNotInProject = await User.find({
+      projects: { $nin: [projectId] },
+    });
+    res.status(200).json(usersNotInProject);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Unable to fetch users not in project" });
+  }
+};

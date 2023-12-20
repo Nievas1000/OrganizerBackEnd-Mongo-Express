@@ -7,5 +7,7 @@ router.route("/login").post(userController.checkUser);
 router.route("/userByEmail").post(userController.getUserByEmail);
 router.route("/addPassword").put(userController.addPasswordToUser);
 router.route("/checkLogin").post(userController.checkLogin);
+router.route("/allUsers").get(userController.getAllUsers);
+router.route("/addProject").post(userController.addProjectsToUser);
 
 module.exports = router;
