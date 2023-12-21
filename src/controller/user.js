@@ -213,3 +213,23 @@ exports.addProjectsToUser = async (req, res) => {
     res.status(500).json({ error });
   }
 };
+
+exports.removeProjectFromUser = async (req, res) => {
+  const { userId, projectId } = req.body;
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { projects: projectId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ message: "Project removed from user", updatedUser });
+  } catch (error) {
+    console.error("Error removing project from user:", error);
+    res.status(500).json({ error: "Unable to remove project from user" });
+  }
+};

@@ -11,7 +11,12 @@ const taskSchema = new mongoose.Schema({
     type: String,
   },
   owner: {
-    type: String,
+    email: {
+      type: String,
+    },
+    name: {
+      type: String,
+    },
   },
   projectId: {
     type: String,
