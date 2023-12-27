@@ -22,7 +22,25 @@ const taskSchema = new mongoose.Schema({
     type: String,
   },
   subtasks: [],
-  comments: [],
+  comments: [
+    {
+      id: {
+        type: String,
+      },
+      email: {
+        type: String,
+      },
+      date: {
+        type: Date,
+      },
+      name: {
+        type: String,
+      },
+      comment: {
+        type: String,
+      },
+    },
+  ],
 });
 
 const Task = mongoose.model("Task", taskSchema);

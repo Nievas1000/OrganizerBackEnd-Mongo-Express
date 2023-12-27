@@ -16,6 +16,11 @@ const projectSchema = new mongoose.Schema({
   state: {
     type: String,
   },
+  admins: [
+    {
+      type: String,
+    },
+  ],
 });
 
 const Project = mongoose.model("Project", projectSchema);

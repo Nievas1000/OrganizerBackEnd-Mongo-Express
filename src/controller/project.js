@@ -15,11 +15,14 @@ exports.createProject = async (req, res) => {
           endDate,
           state,
         });
-        await newProject.save();
 
         const user = await User.findById(userId);
         user.projects.push(newProject._id);
+        newProject.admins.push(user.email);
+
+        await newProject.save();
         await user.save();
+
         res.status(200).json({ message: "Project created!" });
         mongoose.connection.close();
       } else {
@@ -84,5 +87,27 @@ exports.getUsersNotInProject = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Unable to fetch users not in project" });
+  }
+};
+
+exports.addAdminToProject = async (req, res) => {
+  const { id } = req.params;
+  const { email } = req.body;
+  try {
+    const project = await Project.findById(id);
+
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    project.admins.push(email);
+    await project.save();
+
+    res
+      .status(200)
+      .json({ message: "Admin added successfully", admins: project.admins });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Unable to add admin to project" });
   }
 };

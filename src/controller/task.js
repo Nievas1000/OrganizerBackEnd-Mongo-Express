@@ -204,20 +204,84 @@ exports.addComment = async (req, res) => {
     }
 
     if (user && comment) {
-      task.comments.push({
+      const timestamp = new Date().getTime();
+      const randomSuffix = Math.floor(Math.random() * 1000);
+
+      const newComment = {
+        id: `${user._id}-${timestamp}-${randomSuffix}`,
         name: name,
         email: email,
         comment: comment,
         date: new Date(),
-      });
+      };
+
+      task.comments.push(newComment);
       await task.save();
 
       res
         .status(200)
-        .json({ message: "Commnent added successfully", task: task });
+        .json({ message: "Commnent added successfully", comment: newComment });
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Unable to add comment" });
+  }
+};
+
+exports.editComment = async (req, res) => {
+  const taskId = req.params.id;
+  const commentId = req.params.commentId;
+  const { editedComment } = req.body;
+
+  try {
+    const taskExist = await Task.findById(taskId);
+
+    if (!taskExist) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const commentIndex = taskExist.comments.findIndex(
+      (comment) => comment.id === commentId
+    );
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    taskExist.comments[commentIndex].comment = editedComment;
+
+    await taskExist.save();
+
+    res
+      .status(200)
+      .json({ message: "Comment edited successfully", task: taskExist });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to edit comment" });
+  }
+};
+
+exports.deleteComment = async (req, res) => {
+  const taskId = req.params.id;
+  const commentId = req.params.commentId;
+
+  try {
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const updatedComments = task.comments.filter(
+      (comment) => comment.id !== commentId
+    );
+
+    task.comments = updatedComments;
+    await task.save();
+
+    res.status(200).json({ message: "Comment deleted successfully", task });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to delete comment" });
   }
 };

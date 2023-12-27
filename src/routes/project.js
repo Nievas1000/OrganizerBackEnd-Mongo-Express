@@ -9,5 +9,6 @@ router.route("/usersByProject/:id").get(projectController.getUsersByProject);
 router
   .route("/usersNoProject/:id")
   .post(projectController.getUsersNotInProject);
+router.route("/addAdmin/:id").post(projectController.addAdminToProject);
 
 module.exports = router;

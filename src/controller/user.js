@@ -203,7 +203,6 @@ exports.addProjectsToUser = async (req, res) => {
   const { projectId, email } = req.body;
   try {
     const user = await User.findOne({ email });
-    console.log(user);
     if (user) {
       user.projects.push(projectId);
       await user.save();

@@ -15,5 +15,9 @@ router
 router.route("/updateOwner/:id").put(taskController.updateOwner);
 router.route("/updateStatus/:id").put(taskController.updateStatus);
 router.route("/addComment/:id").post(taskController.addComment);
+router.route("/editComment/:id/:commentId").post(taskController.editComment);
+router
+  .route("/deleteComment/:id/:commentId")
+  .delete(taskController.deleteComment);
 
 module.exports = router;
