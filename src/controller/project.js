@@ -33,7 +33,7 @@ exports.createProject = async (req, res) => {
       res.status(500).json({ error });
     }
   } else {
-    res.status(404).json({ message: "Missing fields" });
+    res.status(404).json({ error: "Missing fields" });
   }
 };
 

@@ -14,5 +14,6 @@ router
   .get(taskController.getTaskByStatus);
 router.route("/updateOwner/:id").put(taskController.updateOwner);
 router.route("/updateStatus/:id").put(taskController.updateStatus);
+router.route("/addComment/:id").post(taskController.addComment);
 
 module.exports = router;

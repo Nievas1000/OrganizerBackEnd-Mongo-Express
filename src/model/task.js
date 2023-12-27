@@ -22,9 +22,7 @@ const taskSchema = new mongoose.Schema({
     type: String,
   },
   subtasks: [],
-  order: {
-    type: Number,
-  },
+  comments: [],
 });
 
 const Task = mongoose.model("Task", taskSchema);

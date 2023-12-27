@@ -32,7 +32,7 @@ exports.createTask = async (req, res) => {
       res.status(500).json({ error });
     }
   } else {
-    res.status(404).json({ message: "Missing fields" });
+    res.status(404).json({ error: "Missing fields" });
   }
 };
 
@@ -188,5 +188,36 @@ exports.updateStatus = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Unable to update task" });
+  }
+};
+
+exports.addComment = async (req, res) => {
+  const taskId = req.params.id;
+  const { name, email, comment } = req.body;
+
+  try {
+    const task = await Task.findById(taskId);
+    const user = await User.findOne({ email });
+
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    if (user && comment) {
+      task.comments.push({
+        name: name,
+        email: email,
+        comment: comment,
+        date: new Date(),
+      });
+      await task.save();
+
+      res
+        .status(200)
+        .json({ message: "Commnent added successfully", task: task });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to add comment" });
   }
 };
