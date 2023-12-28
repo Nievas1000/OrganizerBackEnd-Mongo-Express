@@ -1,6 +1,7 @@
 const User = require("../model/user");
 const { encrypt, compare } = require("../Helpers/handleBcrypt");
 const jwt = require("jsonwebtoken");
+const Project = require("../model/project");
 const expireTime = 4 * 60 * 60;
 
 exports.createUser = async (req, res) => {

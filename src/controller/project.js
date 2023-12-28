@@ -23,13 +23,13 @@ exports.createProject = async (req, res) => {
         await newProject.save();
         await user.save();
 
-        res.status(200).json({ message: "Project created!" });
-        mongoose.connection.close();
+        res
+          .status(200)
+          .json({ message: "Project created!", project: newProject });
       } else {
         res
           .status(404)
           .json({ error: "There is already a project with this name." });
-        mongoose.connection.close();
       }
     } catch (error) {
       console.log(error);
