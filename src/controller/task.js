@@ -20,7 +20,7 @@ exports.createTask = async (req, res) => {
           },
         });
         await newTask.save();
-        const allTasks = await Task.find();
+        const allTasks = await Task.find({ projectId });
         res.status(200).json({ message: "Task created!", tasks: allTasks });
       } else {
         res

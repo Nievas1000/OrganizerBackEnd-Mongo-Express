@@ -141,7 +141,7 @@ exports.addPasswordToUser = async (req, res) => {
       if (userExist) {
         const hashedPassword = await encrypt(password);
         const token = jwt.sign(
-          { userId: existingUser._id, email: existingUser.email },
+          { userId: userExist._id, email: userExist.email },
           "kira",
           { expiresIn: expireTime }
         );
@@ -166,7 +166,8 @@ exports.addPasswordToUser = async (req, res) => {
         });
       }
     } catch (error) {
-      res.status(500).json({ error });
+      console.log(error);
+      res.status(500).json({ error: "Unable to add a password" });
     }
   } else {
     res.status(400).json({ error: "Missing required fields" });

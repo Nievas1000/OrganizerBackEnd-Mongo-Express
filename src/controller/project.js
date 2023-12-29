@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Project = require("../model/project");
 const User = require("../model/user");
+const Task = require("../model/task");
 
 exports.createProject = async (req, res) => {
   const { name, description, startDate, endDate, state, userId } = req.body;
@@ -37,6 +38,25 @@ exports.createProject = async (req, res) => {
     }
   } else {
     res.status(404).json({ error: "Missing fields" });
+  }
+};
+
+exports.getProjectById = async (req, res) => {
+  const projectId = req.params.id;
+
+  try {
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    const user = await User.findOne({ email: project.admins[0] });
+    const tasks = await Task.find({ projectId });
+
+    res.status(200).json({ project, leader: user, tasks });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to fetch project" });
   }
 };
 
@@ -109,5 +129,49 @@ exports.addAdminToProject = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Unable to add admin to project" });
+  }
+};
+
+exports.updateProject = async (req, res) => {
+  const projectId = req.params.id;
+  const { name, description } = req.body;
+
+  try {
+    const existingProject = await Project.findById(projectId);
+
+    if (!existingProject) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    if (name && description) {
+      existingProject.name = name;
+      existingProject.description = description;
+    }
+
+    await existingProject.save();
+
+    res.status(200).json({
+      message: "Project updated successfully",
+      project: existingProject,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to update project" });
+  }
+};
+
+exports.deleteProject = async (req, res) => {
+  const projectId = req.params.id;
+
+  try {
+    const deletedProject = await Project.findByIdAndDelete(projectId);
+
+    if (!deletedProject) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    res.status(200).json({ message: "Project deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to delete project" });
   }
 };
