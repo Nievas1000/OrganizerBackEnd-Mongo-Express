@@ -10,5 +10,6 @@ router.route("/checkLogin").post(userController.checkLogin);
 router.route("/allUsers").get(userController.getAllUsers);
 router.route("/addProject").post(userController.addProjectsToUser);
 router.route("/removeProject").post(userController.removeProjectFromUser);
+router.route("/refreshTest").post(userController.refreshTest);
 
 module.exports = router;

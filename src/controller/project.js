@@ -175,3 +175,13 @@ exports.deleteProject = async (req, res) => {
     res.status(500).json({ error: "Unable to delete project" });
   }
 };
+
+exports.refreshProject = async (req, res) => {
+  const { name } = req.body;
+  try {
+    await Project.findOneAndDelete({ name });
+    res.status(200).json({ message: "Test project deleted succesfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Unable to delete the test project." });
+  }
+};

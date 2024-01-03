@@ -13,4 +13,5 @@ router
   .route("/usersNoProject/:id")
   .post(projectController.getUsersNotInProject);
 router.route("/addAdmin/:id").post(projectController.addAdminToProject);
+router.route("/refreshProject").post(projectController.refreshProject);
 module.exports = router;

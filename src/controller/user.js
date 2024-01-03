@@ -234,3 +234,12 @@ exports.removeProjectFromUser = async (req, res) => {
     res.status(500).json({ error: "Unable to remove project from user" });
   }
 };
+
+exports.refreshTest = async (req, res) => {
+  try {
+    await User.findOneAndDelete({ name: "Test" });
+    res.status(200).json({ message: "Test user deleted succesfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Unable to delete the test user." });
+  }
+};
