@@ -179,9 +179,23 @@ exports.deleteProject = async (req, res) => {
 exports.refreshProject = async (req, res) => {
   const { name } = req.body;
   try {
-    await Project.findOneAndDelete({ name });
-    res.status(200).json({ message: "Test project deleted succesfully." });
+    const project = await Project.findOne({ name: name });
+
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    const projectId = project._id;
+
+    await Task.deleteMany({ projectId });
+
+    await Project.findOneAndDelete({ _id: projectId });
+
+    return res
+      .status(200)
+      .json({ message: "Project and tasks deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Unable to delete the test project." });
+    console.error(error);
+    return res.status(500).json({ error: "Error deleting project and tasks" });
   }
 };
